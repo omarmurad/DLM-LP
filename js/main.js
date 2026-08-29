@@ -66,7 +66,38 @@
   });
   popupOverlay.addEventListener("click", closePopup);
   popupClose.addEventListener("click", closePopup);
-  popupFormLink.addEventListener("click", function(){ closePopup(); });
+
+  /* ---------------- Contact form as a popup (sticky button) ---------------- */
+  var formFloatBtn = document.getElementById("formFloatBtn");
+  var formPopupOverlay = document.getElementById("formPopupOverlay");
+  var formPopupClose = document.getElementById("formPopupClose");
+  var contactFormPanel = document.getElementById("contactFormPanel");
+
+  function openFormPopup(){
+    closePopup(); // close the small WhatsApp/Form action sheet if it was open
+    contactFormPanel.classList.add("as-modal");
+    formPopupOverlay.classList.add("open");
+    document.body.classList.add("form-popup-open");
+  }
+  function closeFormPopup(){
+    contactFormPanel.classList.remove("as-modal");
+    formPopupOverlay.classList.remove("open");
+    document.body.classList.remove("form-popup-open");
+  }
+  formFloatBtn.addEventListener("click", openFormPopup);
+  formPopupOverlay.addEventListener("click", closeFormPopup);
+  formPopupClose.addEventListener("click", closeFormPopup);
+  document.addEventListener("keydown", function(e){
+    if(e.key === "Escape") closeFormPopup();
+  });
+  // In the existing mobile "how would you like to contact us" sheet, the
+  // "fill the form" choice now opens the form as a popup directly instead
+  // of just scrolling down to the contact section.
+  popupFormLink.addEventListener("click", function(e){
+    e.preventDefault();
+    closePopup();
+    openFormPopup();
+  });
 
   /* ---------------- i18n ---------------- */
   var currentLang = "ar";
@@ -146,21 +177,6 @@
       if(rect.top < window.innerHeight && rect.bottom > 0){ el.classList.add("in"); }
     });
   }, { passive: true });
-
-  /* ---------------- Work filter ---------------- */
-  var filterBtns = document.querySelectorAll(".filter-pill");
-  var workTiles = document.querySelectorAll(".work-tile");
-  filterBtns.forEach(function(btn){
-    btn.addEventListener("click", function(){
-      filterBtns.forEach(function(b){ b.classList.remove("active"); });
-      btn.classList.add("active");
-      var f = btn.getAttribute("data-filter");
-      workTiles.forEach(function(tile){
-        var cat = tile.getAttribute("data-cat");
-        tile.classList.toggle("hidden", f !== "all" && cat !== f);
-      });
-    });
-  });
 
   /* ---------------- FAQ accordion ---------------- */
   document.querySelectorAll(".faq-item").forEach(function(item){
