@@ -604,7 +604,16 @@ body.form-popup-open{ overflow:hidden; }
 .popup-close:hover{ background:var(--cream-2); }
 
 /* ---------- Reveal ---------- */
-.reveal{ opacity:0; transform:translateY(24px); transition:opacity .7s var(--ease), transform .7s var(--ease); }
+.reveal{
+  opacity:0; transform:translateY(24px); transition:opacity .7s var(--ease), transform .7s var(--ease);
+  -webkit-backface-visibility:hidden; backface-visibility:hidden;
+}
+/* Give every top-level section its own stacking context. iOS Safari has a
+   known class of bug where, during a fast momentum-scroll, elements with
+   an active transform/opacity transition (our .reveal fade-ins) can very
+   briefly paint above a neighbouring section instead of below it — this
+   isolates each section so that can't happen. */
+section{ isolation:isolate; }
 .reveal.in{ opacity:1; transform:translateY(0); }
 
 /* ---------- Responsive ---------- */
@@ -654,9 +663,10 @@ body.form-popup-open{ overflow:hidden; }
   .why-cards{ grid-template-columns:1fr; gap:16px; }
 
   /* Client logos: shrink to fit the screen width instead of the row
-     needing any left/right movement to be seen. */
-  .clients-grid{ grid-template-columns:repeat(3,1fr); margin-top:24px; }
-  .client-tile{ padding:8px; }
+     needing any left/right movement to be seen. 2 per row (not 3) so
+     each logo stays legible on narrow phones. */
+  .clients-grid{ grid-template-columns:repeat(2,1fr); margin-top:24px; }
+  .client-tile{ padding:10px; }
   .logo-track .logo-chip{ height:34px; max-width:96px; }
   .logo-track .logo-chip img{ max-width:96px; }
   .marquee-track{ gap:28px; }
