@@ -73,6 +73,11 @@ html{ scroll-behavior:smooth; }
 @media (prefers-reduced-motion: reduce){
   html{ scroll-behavior:auto; }
   *,*::before,*::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
+  /* Keep the client-logo marquee looping even when the OS "reduce motion"
+     setting is on — this is what previously made it look like it "played
+     once and disappeared": duration collapsed to ~0 and it froze on the
+     last frame (translateX(-50%), i.e. half the logos cut off). */
+  .marquee-track{ animation-duration:32s !important; animation-iteration-count:infinite !important; }
 }
 
 body{
@@ -438,9 +443,16 @@ html[dir="rtl"] .hero-copy{ direction:rtl; text-align:right; }
 }
 .marquee-track{
   display:flex; gap:48px; width:max-content;
-  animation:marqueeScroll 32s linear infinite;
+  animation:marqueeScroll 32s linear infinite !important;
 }
-.marquee-wrap:hover .marquee-track{ animation-play-state:paused; }
+/* Only pause-on-hover for real mouse pointers. On touchscreens, :hover can
+   latch "on" after a single tap/scroll-touch and never release (there's no
+   mouse-leave event), which permanently freezes the marquee — this was the
+   actual cause of it looking like it "played once and disappeared" on
+   phones. */
+@media (hover: hover) and (pointer: fine){
+  .marquee-wrap:hover .marquee-track{ animation-play-state:paused; }
+}
 @keyframes marqueeScroll{
   from{ transform:translateX(0); }
   to{ transform:translateX(-50%); }
@@ -508,6 +520,64 @@ html[dir="rtl"] .footer-logo-col{ align-items:flex-end; }
 }
 .wa-float:hover{ transform:scale(1.1) rotate(-6deg); }
 .wa-float svg{ width:30px; height:30px; }
+
+/* ---------- Sticky "fill form" float (new, sits above WhatsApp) ---------- */
+.form-float{
+  position:fixed; bottom:96px; inset-inline-end:26px; z-index:90;
+  width:58px; height:58px; border-radius:50%; background:var(--purple);
+  display:flex; align-items:center; justify-content:center; border:none; cursor:pointer;
+  box-shadow:0 8px 24px rgba(0,0,0,.22); transition:transform .25s var(--ease-bounce);
+}
+.form-float:hover{ transform:scale(1.1) rotate(6deg); }
+
+/* ---------- Contact form as a popup ---------- */
+.form-popup-overlay{
+  position:fixed; inset:0; background:rgba(17,17,17,.55); z-index:210;
+  opacity:0; pointer-events:none; transition:opacity .3s var(--ease);
+}
+.form-popup-overlay.open{ opacity:1; pointer-events:auto; }
+
+.form-popup-close{
+  display:none; position:absolute; top:14px; inset-inline-end:14px; z-index:2;
+  background:var(--cream-2); border:none; width:34px; height:34px; border-radius:50%;
+  align-items:center; justify-content:center; color:var(--ink); cursor:pointer;
+}
+.form-popup-close:hover{ background:var(--line); }
+
+/* When JS adds .as-modal, the same panel (still the same DOM node, same
+   #contactForm, same Formspree wiring) is lifted out of the page grid and
+   centered as a true popup, instead of being duplicated.
+   NOTE: `!important` here is deliberate — .reveal.in (further down this
+   file) sets its own `transform`/`opacity` and, at equal specificity, a
+   later rule normally wins the cascade. That was silently overriding the
+   centering transform below and is what made the popup render off-center. */
+@keyframes formPopupIn{
+  from{ opacity:0; transform:scale(.92); }
+  to{ opacity:1; transform:scale(1); }
+}
+.contact-form-panel.as-modal{
+  position:fixed !important; inset:0 !important; margin:auto !important;
+  transform:none !important; opacity:1 !important;
+  z-index:211; width:min(560px, 92vw); height:fit-content; max-height:88vh; overflow-y:auto;
+  background:var(--paper); border-radius:20px; padding:36px 28px 28px;
+  box-shadow:0 24px 60px rgba(0,0,0,.3);
+  animation:formPopupIn .4s var(--ease-bounce);
+}
+.contact-form-panel.as-modal .form-popup-close{ display:flex; }
+
+/* Popup-only intro copy: hidden while the panel sits inline in the page
+   (the section above it already carries the same heading), shown only
+   when the panel is popped up via the sticky button. */
+.form-popup-header{ display:none; }
+.contact-form-panel.as-modal .form-popup-header{
+  display:block; text-align:center; margin-bottom:22px;
+}
+.contact-form-panel.as-modal .form-popup-header .eyebrow{ justify-content:center; }
+.contact-form-panel.as-modal .form-popup-header h3{
+  font-size:clamp(1.3rem,2.4vw,1.7rem); margin:8px 0 10px;
+}
+.contact-form-panel.as-modal .form-popup-header p{ color:var(--muted); font-size:.95rem; margin:0; }
+body.form-popup-open{ overflow:hidden; }
 
 /* ---------- Mobile action popup ---------- */
 .popup-overlay{
@@ -582,4 +652,12 @@ html[dir="rtl"] .footer-logo-col{ align-items:flex-end; }
   .logo .tag{ display:none; }
   .logo .mark{ font-size:1.05rem; white-space:nowrap; }
   .why-cards{ grid-template-columns:1fr; gap:16px; }
+
+  /* Client logos: shrink to fit the screen width instead of the row
+     needing any left/right movement to be seen. */
+  .clients-grid{ grid-template-columns:repeat(3,1fr); margin-top:24px; }
+  .client-tile{ padding:8px; }
+  .logo-track .logo-chip{ height:34px; max-width:96px; }
+  .logo-track .logo-chip img{ max-width:96px; }
+  .marquee-track{ gap:28px; }
 }
