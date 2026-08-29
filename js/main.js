@@ -34,8 +34,18 @@
   }
   var grid = document.getElementById("clientsGrid");
   if (grid) {
-    grid.innerHTML = CLIENT_LOGOS.map(function(c){
-      return '<div class="client-tile"><img src="assets/img/clients/' + c.file + '" alt="' + c.name + '" loading="lazy"></div>';
+    // Fisher-Yates shuffle — a fresh random order every page load, so this
+    // never reads as a fixed, predictable grid.
+    var shuffled = CLIENT_LOGOS.slice();
+    for (var si = shuffled.length - 1; si > 0; si--) {
+      var sj = Math.floor(Math.random() * (si + 1));
+      var stmp = shuffled[si]; shuffled[si] = shuffled[sj]; shuffled[sj] = stmp;
+    }
+    grid.innerHTML = shuffled.map(function(c, idx){
+      var rot = (Math.random() * 8 - 4).toFixed(2); // -4deg .. 4deg
+      var delay = (Math.random() * 0.5 + idx * 0.03).toFixed(2); // staggered + randomized
+      return '<div class="client-tile" style="--rot:' + rot + 'deg; --delay:' + delay + 's;">'
+        + '<img src="assets/img/clients/' + c.file + '" alt="' + c.name + '" loading="lazy"></div>';
     }).join("");
   }
 
