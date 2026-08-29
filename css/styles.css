@@ -619,12 +619,13 @@ body.form-popup-open{ overflow:hidden; }
   opacity:0; transform:translateY(24px); transition:opacity .7s var(--ease), transform .7s var(--ease);
   -webkit-backface-visibility:hidden; backface-visibility:hidden;
 }
-/* Give every top-level section its own stacking context. iOS Safari has a
-   known class of bug where, during a fast momentum-scroll, elements with
-   an active transform/opacity transition (our .reveal fade-ins) can very
-   briefly paint above a neighbouring section instead of below it — this
-   isolates each section so that can't happen. */
-section{ isolation:isolate; }
+/* NOTE: previously had `section{ isolation:isolate; }` here as a
+   defensive fix for a suspected (never confirmed) iOS scroll-compositing
+   glitch. Removed — it caused a confirmed real bug: it trapped the
+   position:fixed popup form (a descendant of <section id="contact">)
+   inside that section's own stacking context, so the popup's backdrop
+   and other later page content painted on top of it instead of below
+   it, breaking the popup. */
 .reveal.in{ opacity:1; transform:translateY(0); }
 
 /* ---------- Responsive ---------- */
