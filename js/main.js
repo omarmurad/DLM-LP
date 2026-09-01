@@ -1,6 +1,17 @@
 (function(){
   "use strict";
 
+  /* ---------------- CRM (Supabase) config ----------------
+     Fill these in once your Supabase project exists (see
+     crm/supabase-schema.sql). Get both values from:
+     Supabase dashboard → Project Settings → API.
+     Leaving them as placeholders just means leads won't be
+     saved to the CRM yet — the on-site Formspree flow (if
+     configured) keeps working independently either way. */
+  var SUPABASE_URL = "REPLACE_WITH_YOUR_SUPABASE_URL";
+  var SUPABASE_ANON_KEY = "REPLACE_WITH_YOUR_SUPABASE_ANON_KEY";
+  var supabaseConfigured = SUPABASE_URL.indexOf("REPLACE_WITH") === -1 && SUPABASE_ANON_KEY.indexOf("REPLACE_WITH") === -1;
+
   /* ---------------- Clients — real logos extracted from the 2026 profile ---------------- */
   var CLIENT_LOGOS = [
     { file: "client-00.png", name: "Al Madinah Region Development Authority" },
@@ -210,17 +221,16 @@
     });
   });
 
-  /* ---------------- Contact form (Formspree) ---------------- */
+  /* ---------------- Contact form (CRM + Formspree) ---------------- */
   var form = document.getElementById("contactForm");
   var successBox = document.getElementById("formSuccess");
 
   form.addEventListener("submit", function(e){
     e.preventDefault();
     var action = form.getAttribute("action");
+    var formspreeConfigured = action && action.indexOf("REPLACE_WITH_YOUR_FORMSPREE_ID") === -1;
 
-    // If the Formspree endpoint hasn't been configured yet, don't attempt
-    // a network call that will fail — just guide the person clearly.
-    if(!action || action.indexOf("REPLACE_WITH_YOUR_FORMSPREE_ID") > -1){
+    if(!supabaseConfigured && !formspreeConfigured){
       var msgs = {
         ar: "نموذج التواصل غير مفعّل بعد لاستقبال الرسائل مباشرة. يرجى التواصل عبر WhatsApp أو البريد الإلكتروني مباشرة حاليًا.",
         en: "This form isn't wired to receive submissions yet. Please reach out via WhatsApp or email directly for now."
@@ -235,17 +245,46 @@
     submitBtn.disabled = true;
     submitBtn.textContent = "...";
 
-    fetch(action, {
-      method: "POST",
-      body: data,
-      headers: { "Accept": "application/json" }
-    }).then(function(response){
-      if(response.ok){
-        form.style.display = "none";
-        successBox.classList.add("show");
-      } else {
-        throw new Error("Form submission failed");
-      }
+    var tasks = [];
+
+    // Primary: save the lead into the CRM (Supabase).
+    if(supabaseConfigured){
+      tasks.push(
+        fetch(SUPABASE_URL + "/rest/v1/leads", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": "Bearer " + SUPABASE_ANON_KEY
+          },
+          body: JSON.stringify({
+            name: data.get("name"),
+            company: data.get("company"),
+            email: data.get("email") || null,
+            phone: data.get("phone"),
+            service: data.get("service"),
+            city: data.get("city"),
+            brief: data.get("brief")
+          })
+        }).then(function(r){ if(!r.ok) throw new Error("Supabase insert failed"); })
+      );
+    }
+
+    // Optional: also email a copy via Formspree, if it's been configured.
+    // Best-effort — a Formspree failure alone shouldn't block success,
+    // since the CRM save (above) is the source of truth once configured.
+    if(formspreeConfigured){
+      var formspreeCall = fetch(action, {
+        method: "POST",
+        body: data,
+        headers: { "Accept": "application/json" }
+      }).then(function(r){ if(!r.ok) throw new Error("Formspree failed"); });
+      tasks.push(supabaseConfigured ? formspreeCall.catch(function(){}) : formspreeCall);
+    }
+
+    Promise.all(tasks).then(function(){
+      form.style.display = "none";
+      successBox.classList.add("show");
     }).catch(function(){
       var errMsgs = {
         ar: "حدث خطأ أثناء الإرسال. يرجى المحاولة مرة أخرى أو التواصل عبر WhatsApp.",
