@@ -8,8 +8,8 @@
      Leaving them as placeholders just means leads won't be
      saved to the CRM yet — the on-site Formspree flow (if
      configured) keeps working independently either way. */
-  var SUPABASE_URL = "REPLACE_WITH_YOUR_SUPABASE_URL";
-  var SUPABASE_ANON_KEY = "REPLACE_WITH_YOUR_SUPABASE_ANON_KEY";
+  var SUPABASE_URL = "https://deaazrfxioeusxlsdixz.supabase.co";
+  var SUPABASE_ANON_KEY = "sb_publishable_QvpwJ7wmZfuVAjpTLOprjQ_5onukeUx";
   var supabaseConfigured = SUPABASE_URL.indexOf("REPLACE_WITH") === -1 && SUPABASE_ANON_KEY.indexOf("REPLACE_WITH") === -1;
 
   /* ---------------- Clients — real logos extracted from the 2026 profile ---------------- */
