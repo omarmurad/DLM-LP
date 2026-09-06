@@ -131,8 +131,6 @@
     });
 
     document.getElementById("langBtn").textContent = dict.lang_toggle;
-    var mobileBtn = document.getElementById("langBtnMobile");
-    if(mobileBtn) mobileBtn.textContent = dict.lang_toggle;
 
     currentLang = lang;
   }
@@ -141,18 +139,7 @@
     applyI18n(currentLang === "ar" ? "en" : "ar");
   }
   document.getElementById("langBtn").addEventListener("click", toggleLang);
-  var mBtn = document.getElementById("langBtnMobile");
-  if(mBtn) mBtn.addEventListener("click", toggleLang);
 
-  /* ---------------- Mobile nav ---------------- */
-  var navToggle = document.getElementById("navToggle");
-  var navLinks = document.getElementById("navLinks");
-  navToggle.addEventListener("click", function(){
-    navLinks.classList.toggle("open");
-  });
-  navLinks.querySelectorAll("a").forEach(function(a){
-    a.addEventListener("click", function(){ navLinks.classList.remove("open"); });
-  });
 
   /* ---------------- Nav shadow on scroll ---------------- */
   var nav = document.querySelector(".site-nav");
