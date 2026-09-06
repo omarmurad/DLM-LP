@@ -211,8 +211,6 @@ section{ position:relative; padding:100px 0; }
 .logo-text{ display:flex; flex-direction:column; }
 .logo .mark{ font-family:var(--f-display, var(--f-display-en)); font-weight:700; font-size:1.3rem; letter-spacing:.01em; color:var(--ink-soft); }
 .logo .tag{ font-family:var(--f-mono); font-size:.56rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin-top:2px; }
-.nav-toggle{ display:none; background:none; border:none; cursor:pointer; padding:8px; }
-.nav-toggle span{ display:block; width:22px; height:2px; background:var(--ink); margin:5px 0; }
 .only-mobile{ display:none; }
 
 /* ---------- Hero ---------- */
@@ -615,15 +613,9 @@ body.form-popup-open{ overflow:hidden; }
   .client-tile{ width:calc(33.333% - 12px); }
 }
 @media (max-width: 760px){
-  .nav-links{
-    position:fixed; inset-inline:0; top:80px; bottom:0; background:var(--cream);
-    flex-direction:column; align-items:flex-start; justify-content:flex-start;
-    padding:36px 28px; gap:24px; transform:translateY(-140%);
-    transition:transform .35s var(--ease); z-index:90; overflow-y:auto;
-  }
-  .nav-links.open{ transform:translateY(0); }
-  .nav-toggle{ display:block; }
-  .nav-right .lang-btn{ display:none; }
+  .nav-links{ display:none; }
+  /* keep the language toggle visible on mobile — the hamburger menu
+     (its only path on mobile before) has been removed */
   /* Shrink just the header's CTA pill on mobile — at full size it was
      wide enough to run past the edge of narrow screens. */
   .site-nav .btn-lime{ padding:10px 16px; font-size:.8rem; }
