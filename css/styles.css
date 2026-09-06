@@ -73,11 +73,6 @@ html{ scroll-behavior:smooth; }
 @media (prefers-reduced-motion: reduce){
   html{ scroll-behavior:auto; }
   *,*::before,*::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
-  /* Keep the client-logo marquee looping even when the OS "reduce motion"
-     setting is on — this is what previously made it look like it "played
-     once and disappeared": duration collapsed to ~0 and it froze on the
-     last frame (translateX(-50%), i.e. half the logos cut off). */
-  .marquee-track{ animation-duration:32s !important; animation-iteration-count:infinite !important; }
 }
 
 body{
@@ -435,44 +430,7 @@ html[dir="rtl"] .hero-copy{ direction:rtl; text-align:right; }
 .faq-a{ max-height:0; overflow:hidden; transition:max-height .35s var(--ease); }
 .faq-a p{ color:var(--muted); margin:0 0 22px; max-width:720px; font-size:.98rem; }
 
-/* ---------- Clients marquee ---------- */
-.marquee-wrap{
-  overflow:hidden; margin-top:8px; padding-block:8px;
-  mask-image:linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-  -webkit-mask-image:linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-}
-.marquee-track{
-  display:flex; gap:48px; width:max-content;
-  animation:marqueeScroll 32s linear infinite !important;
-}
-/* Only pause-on-hover for real mouse pointers. On touchscreens, :hover can
-   latch "on" after a single tap/scroll-touch and never release (there's no
-   mouse-leave event), which permanently freezes the marquee — this was the
-   actual cause of it looking like it "played once and disappeared" on
-   phones. */
-@media (hover: hover) and (pointer: fine){
-  .marquee-wrap:hover .marquee-track{ animation-play-state:paused; }
-}
-@keyframes marqueeScroll{
-  from{ transform:translateX(0); }
-  to{ transform:translateX(-50%); }
-}
-.marquee-item{
-  font-family:var(--f-display, var(--f-display-en)); font-weight:700; font-size:1.3rem;
-  color:var(--muted); white-space:nowrap; display:flex; align-items:center; gap:12px;
-  opacity:.75; transition:opacity .25s var(--ease), color .25s var(--ease);
-}
-.marquee-item:hover{ opacity:1; color:var(--purple); }
-.marquee-item .dot{ width:6px; height:6px; border-radius:50%; background:var(--purple-3); }
-
-/* Real client logos: marquee (logo images) + static grid */
-.logo-track{ align-items:center; }
-.logo-track .logo-chip{
-  height:56px; width:auto; max-width:150px; display:flex; align-items:center; justify-content:center;
-  filter:grayscale(100%) opacity(.7); transition:filter .25s var(--ease);
-}
-.logo-track .logo-chip:hover{ filter:grayscale(0%) opacity(1); }
-.logo-track .logo-chip img{ height:100%; width:auto; max-width:150px; object-fit:contain; }
+/* ---------- Real client logos (static grid) ---------- */
 
 .clients-grid{
   display:flex; flex-wrap:wrap; justify-content:center; align-items:stretch;
@@ -491,8 +449,8 @@ html[dir="rtl"] .hero-copy{ direction:rtl; text-align:right; }
 @keyframes clientPop{
   to{ opacity:1; transform:translateY(0) rotate(var(--rot,0deg)) scale(1); }
 }
-.client-tile img{ max-width:100%; max-height:100%; object-fit:contain; filter:grayscale(100%) opacity(.75); transition:filter .25s var(--ease), transform .25s var(--ease); }
-.client-tile:hover img{ filter:grayscale(0%) opacity(1); transform:scale(1.06); }
+.client-tile img{ max-width:100%; max-height:100%; object-fit:contain; transition:transform .25s var(--ease); }
+.client-tile:hover img{ transform:scale(1.06); }
 .client-tile:hover{ transform:translateY(0) rotate(0deg) scale(1.03); }
 
 /* ---------- Final CTA ---------- */
@@ -514,32 +472,27 @@ footer{ padding:56px 0 30px; border-top:1px solid var(--line); }
 html[dir="rtl"] .footer-logo-col{ align-items:flex-end; }
 .footer-bottom{ padding-top:24px; border-top:1px solid var(--line); font-size:.85rem; color:var(--muted); }
 
-/* ---------- WhatsApp float ---------- */
-.wa-float{
-  position:fixed; bottom:26px; inset-inline-end:26px; z-index:90;
-  width:58px; height:58px; border-radius:50%; background:#25D366;
-  display:flex; align-items:center; justify-content:center;
-  box-shadow:0 8px 24px rgba(0,0,0,.22); transition:transform .25s var(--ease-bounce);
+/* ---------- Sticky bottom bar (form + WhatsApp) ---------- */
+.sticky-cta-bar{
+  position:fixed; left:0; right:0; bottom:0; z-index:90;
+  display:flex; gap:10px; padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  background:var(--paper); border-top:1px solid var(--line);
+  box-shadow:0 -6px 20px rgba(0,0,0,.06);
 }
-.wa-float::before{
-  content:""; position:absolute; inset:0; border-radius:50%; background:#25D366;
-  animation:waPulse 2.6s ease-out infinite; z-index:-1;
+.cta-pill{
+  flex:1; display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:13px 16px; border-radius:999px; font-size:.92rem; font-weight:700;
+  border:none; cursor:pointer; font-family:inherit; text-decoration:none;
+  transition:transform .2s var(--ease), opacity .2s var(--ease);
 }
-@keyframes waPulse{
-  0%{ transform:scale(1); opacity:.55; }
-  100%{ transform:scale(1.9); opacity:0; }
-}
-.wa-float:hover{ transform:scale(1.1) rotate(-6deg); }
-.wa-float svg{ width:30px; height:30px; }
+.cta-pill:hover{ transform:translateY(-2px); opacity:.94; }
+.cta-pill-form{ background:var(--purple); color:#fff; }
+.cta-pill-wa{ background:#eafaf0; color:#1c8a4a; border:1px solid #bfe8cf; }
+.cta-pill svg{ flex-shrink:0; }
+.cta-pill span{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
-/* ---------- Sticky "fill form" float (new, sits above WhatsApp) ---------- */
-.form-float{
-  position:fixed; bottom:96px; inset-inline-end:26px; z-index:90;
-  width:58px; height:58px; border-radius:50%; background:var(--purple);
-  display:flex; align-items:center; justify-content:center; border:none; cursor:pointer;
-  box-shadow:0 8px 24px rgba(0,0,0,.22); transition:transform .25s var(--ease-bounce);
-}
-.form-float:hover{ transform:scale(1.1) rotate(6deg); }
+/* Keep page content from being hidden behind the fixed bottom bar */
+body{ padding-bottom:74px; }
 
 /* ---------- Contact form as a popup ---------- */
 .form-popup-overlay{
@@ -684,7 +637,4 @@ body.form-popup-open{ overflow:hidden; }
      each logo stays legible on narrow phones. */
   .clients-grid{ margin-top:24px; gap:10px; }
   .client-tile{ width:calc(50% - 8px); padding:10px; }
-  .logo-track .logo-chip{ height:34px; max-width:96px; }
-  .logo-track .logo-chip img{ max-width:96px; }
-  .marquee-track{ gap:28px; }
 }
