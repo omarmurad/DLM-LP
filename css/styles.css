@@ -245,9 +245,7 @@ html[dir="rtl"] .hero-copy{ direction:rtl; text-align:right; }
 .hero-logo-mark{
   position:relative; z-index:1; width:56%; max-width:300px;
   filter:drop-shadow(0 24px 50px rgba(100,45,255,.32));
-  animation:logoFloat 6s ease-in-out infinite;
 }
-@keyframes logoFloat{ 0%,100%{ transform:translateY(0) rotate(0deg); } 50%{ transform:translateY(-16px) rotate(-2deg); } }
 .hero-visual .spark{
   position:absolute; border-radius:3px; background:var(--purple-2);
   animation:floatY 5s ease-in-out infinite;
@@ -472,7 +470,25 @@ footer{ padding:56px 0 30px; border-top:1px solid var(--line); }
 html[dir="rtl"] .footer-logo-col{ align-items:flex-end; }
 .footer-bottom{ padding-top:24px; border-top:1px solid var(--line); font-size:.85rem; color:var(--muted); }
 
-/* ---------- Sticky bottom bar (form + WhatsApp) ---------- */
+/* ---------- WhatsApp float (reverted back to original circular button) ---------- */
+.wa-float{
+  position:fixed; bottom:90px; inset-inline-end:20px; z-index:95;
+  width:58px; height:58px; border-radius:50%; background:#25D366;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 8px 24px rgba(0,0,0,.22); transition:transform .25s var(--ease-bounce);
+}
+.wa-float::before{
+  content:""; position:absolute; inset:0; border-radius:50%; background:#25D366;
+  animation:waPulse 2.6s ease-out infinite; z-index:-1;
+}
+@keyframes waPulse{
+  0%{ transform:scale(1); opacity:.55; }
+  100%{ transform:scale(1.9); opacity:0; }
+}
+.wa-float:hover{ transform:scale(1.1) rotate(-6deg); }
+.wa-float svg{ width:30px; height:30px; }
+
+/* ---------- Sticky bottom bar (form button only) ---------- */
 .sticky-cta-bar{
   position:fixed; left:0; right:0; bottom:0; z-index:90;
   display:flex; gap:10px; padding:12px 16px calc(12px + env(safe-area-inset-bottom));
@@ -487,7 +503,6 @@ html[dir="rtl"] .footer-logo-col{ align-items:flex-end; }
 }
 .cta-pill:hover{ transform:translateY(-2px); opacity:.94; }
 .cta-pill-form{ background:var(--purple); color:#fff; }
-.cta-pill-wa{ background:#eafaf0; color:#1c8a4a; border:1px solid #bfe8cf; }
 .cta-pill svg{ flex-shrink:0; }
 .cta-pill span{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
@@ -609,6 +624,9 @@ body.form-popup-open{ overflow:hidden; }
   .nav-links.open{ transform:translateY(0); }
   .nav-toggle{ display:block; }
   .nav-right .lang-btn{ display:none; }
+  /* Shrink just the header's CTA pill on mobile — at full size it was
+     wide enough to run past the edge of narrow screens. */
+  .site-nav .btn-lime{ padding:10px 16px; font-size:.8rem; }
   .only-mobile{ display:block; margin-top:auto; }
   .form-row{ grid-template-columns:1fr; }
   .work-grid{ grid-template-columns:1fr; }
