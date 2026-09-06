@@ -642,6 +642,15 @@ body.form-popup-open{ overflow:hidden; }
   .logo .mark{ font-size:1.05rem; white-space:nowrap; }
   .why-cards{ grid-template-columns:1fr; gap:16px; }
 
+  /* Nav bar: on narrow phones, logo + language pill + CTA button were
+     together wider than the screen, cropping the CTA button off the
+     left edge. Tighten every piece so the whole row actually fits. */
+  .site-nav .container{ padding-inline:16px; gap:10px; }
+  .nav-right{ gap:8px; }
+  .lang-btn{ padding:7px 10px; font-size:.68rem; }
+  .site-nav .btn-lime{ padding:8px 10px; font-size:.62rem; gap:4px; }
+  .site-nav .logo-icon{ width:26px; }
+
   /* Client logos: shrink to fit the screen width instead of the row
      needing any left/right movement to be seen. 2 per row (not 3) so
      each logo stays legible on narrow phones. */
