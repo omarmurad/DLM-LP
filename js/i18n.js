@@ -9,6 +9,7 @@ const I18N = {
     nav_process: "منهجية العمل",
     nav_contact: "تواصل معنا",
     nav_cta: "شاركنا تفاصيل مشروعك",
+    sticky_bar_form: "شاركنا تفاصيل مشروعك",
     lang_toggle: "English",
     whatsapp_short: "واتساب",
 
@@ -205,6 +206,7 @@ const I18N = {
     nav_process: "Process",
     nav_contact: "Contact",
     nav_cta: "Share Your Project",
+    sticky_bar_form: "Share Your Project",
     lang_toggle: "العربية",
     whatsapp_short: "WhatsApp",
 
