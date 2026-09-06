@@ -35,14 +35,6 @@
     { file: "client-18.png", name: "InterContinental Madinah" },
     { file: "client-19.png", name: "Taibah University" }
   ];
-  var track = document.getElementById("marqueeTrack");
-  if (track) {
-    var chips = CLIENT_LOGOS.map(function(c){
-      return '<span class="logo-chip"><img src="assets/img/clients/' + c.file + '" alt="' + c.name + '" loading="lazy"></span>';
-    }).join("");
-    // Duplicate the list once so the CSS translateX(-50%) loop is seamless
-    track.innerHTML = chips + chips;
-  }
   var grid = document.getElementById("clientsGrid");
   if (grid) {
     // Fisher-Yates shuffle — a fresh random order every page load, so this
