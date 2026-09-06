@@ -648,7 +648,7 @@ body.form-popup-open{ overflow:hidden; }
   .site-nav .container{ padding-inline:16px; gap:10px; }
   .nav-right{ gap:8px; }
   .lang-btn{ padding:7px 10px; font-size:.68rem; }
-  .site-nav .btn-lime{ padding:8px 10px; font-size:.62rem; gap:4px; }
+  .site-nav .btn-lime{ padding:10px 18px; font-size:.85rem; }
   .site-nav .logo-icon{ width:26px; }
 
   /* Client logos: shrink to fit the screen width instead of the row
